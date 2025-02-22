@@ -81,7 +81,7 @@ echo "正在下载服务程序..."
 curl -sL "https://raw.githubusercontent.com/QAbot-zh/go-file-server/main/main.go" -o "$DOMAIN_DIR/main.go"
 
 # 注入动态端口
-sed -i "s/:12345/:$PORT/g" "$DOMAIN_DIR/main.go"
+sed -i '' "s/:3456/:$PORT/g" "$DOMAIN_DIR/main.go"
 
 # 安装PM2
 echo ""
