@@ -1,10 +1,14 @@
 #!/bin/bash
 
 # 获取用户输入
-read -p "请输入文件服务器的 IP 地址: " FILE_SERVER_IP
 read -p "请输入文件服务器的域名: " FILE_SERVER_DOMAIN
-read -p "请输入文件服务器的端口号: " FILE_SERVER_PORT
 read -p "请输入访问码（多个用逗号分隔）: " FILE_SERVER_CODE
+
+# 查询DNS
+export FILE_SERVER_IP=$(dig +short a "web$(echo $HOSTNAME | grep -oE 's[0-9]+' | grep -oE '[0-9]+').serv00.com" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$' | head -n1)
+
+# 添加端口
+initial_ports=$(devil port list | awk '/^[0-9]/{print $1}' | sort); devil port add tcp random; export FILE_SERVER_PORT=$(comm -13 <(echo "$initial_ports") <(devil port list | awk '/^[0-9]/{print $1}' | sort) | head -n1)
 
 # 配置反向代理
 devil www add "$FILE_SERVER_DOMAIN" proxy localhost "$FILE_SERVER_PORT"
