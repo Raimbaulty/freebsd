@@ -1,3 +1,5 @@
+#!/bin/bash
+
 aait411dtdpgswcj6avz9bfuvtcidsf0="IyEv"
 iqbvfmlb9kzt5pdkujrtomvnwxtohw4l="Ymlu"
 fc15wcbsz12mer95g7is4fyjphf4d9vb="L2Jh"
