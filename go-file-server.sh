@@ -24,7 +24,7 @@ mkdir -p "$FILE_SERVER_DIR"
 curl -sL "https://raw.githubusercontent.com/QAbot-zh/go-file-server/main/main.go" -o "$FILE_SERVER_DIR/main.go"
 
 # 修改端口号
-sed -i '' "s|http://localhost:3456|http://localhost:$FILE_SERVER_PORT|g" "$FILE_SERVER_DIR/main.go"
+sed -i '' "s|:3456|:$FILE_SERVER_PORT|g" "$FILE_SERVER_DIR/main.go"
 
 # 创建环境配置文件
 cat > "$FILE_SERVER_DIR/env.conf" <<EOF
