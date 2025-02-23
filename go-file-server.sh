@@ -1,8 +1,10 @@
 #!/bin/bash
 
 # 获取用户输入
-read -p "请输入文件服务器的域名: " FILE_SERVER_DOMAIN
 read -p "请输入访问码（多个用逗号分隔）: " FILE_SERVER_CODE
+
+# 查询域名
+export FILE_SERVER_DOMAIN="$(whoami).serv00.net"
 
 # 查询DNS
 export FILE_SERVER_IP=$(dig +short a "web$(echo $HOSTNAME | grep -oE 's[0-9]+' | grep -oE '[0-9]+').serv00.com" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$' | head -n1)
