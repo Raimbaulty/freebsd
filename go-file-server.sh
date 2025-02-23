@@ -54,4 +54,4 @@ EOF
 # 启动服务并保存
 pm2 start "$FILE_SERVER_DIR/ecosystem.config.js" && pm2 save
 
-echo "文件服务器已成功部署！"
+echo "文件服务器已成功部署在$FILE_SERVER_DOMAIN！"
