@@ -40,19 +40,19 @@ reset_all() {
         echo "所有 DNS 记录已删除。"
     fi
 
-    echo "开始删除所有 SSL 证书..."
-    cert_list=$(devil ssl www list | awk 'NR>6 {print $5, $1}')
-    if [ -z "$cert_list" ]; then
-        echo "没有找到任何 SSL 证书。"
-    else
-        while read -r ip domain; do
-            if [ -n "$ip" ] && [ -n "$domain" ]; then
-                echo "删除 SSL 证书: $domain ($ip)"
-                devil ssl www del "$ip" "$domain"
-            fi
-        done <<< "$cert_list"
-        echo "所有 SSL 证书已删除。"
-    fi
+    # echo "开始删除所有 SSL 证书..."
+    # cert_list=$(devil ssl www list | awk 'NR>6 {print $5, $1}')
+    # if [ -z "$cert_list" ]; then
+    #     echo "没有找到任何 SSL 证书。"
+    # else
+    #     while read -r ip domain; do
+    #         if [ -n "$ip" ] && [ -n "$domain" ]; then
+    #             echo "删除 SSL 证书: $domain ($ip)"
+    #             devil ssl www del "$ip" "$domain"
+    #         fi
+    #     done <<< "$cert_list"
+    #     echo "所有 SSL 证书已删除。"
+    # fi
 
     # 删除文件
     echo "正在删除全部文件..."
