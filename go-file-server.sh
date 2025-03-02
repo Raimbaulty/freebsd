@@ -1,5 +1,78 @@
 #!/bin/bash
 
+# 重置功能
+reset_all() {
+    echo "开始删除所有域名..."
+    domain_list=$(devil www list | awk 'NR>2 {print $1}')
+    if [ -z "$domain_list" ]; then
+        echo "没有找到任何域名。"
+    else
+        for domain in $domain_list; do
+            echo "删除域名: $domain"
+            devil www del "$domain"
+        done
+        echo "所有域名已删除。"
+    fi
+
+    echo "开始删除所有端口..."
+    port_list=$(devil port list | awk 'NR>2 {print $1, $2}')
+    if [ -z "$port_list" ]; then
+        echo "没有找到任何端口。"
+    else
+        while read -r port type; do
+            if [ -n "$port" ] && [ -n "$type" ]; then
+                echo "删除端口: $type $port"
+                devil port del "$type" "$port"
+            fi
+        done <<< "$port_list"
+        echo "所有端口已删除。"
+    fi
+
+    echo "开始删除所有 DNS 记录..."
+    dns_list=$(devil dns list | awk 'NR>2 {print $1}')
+    if [ -z "$dns_list" ]; then
+        echo "没有找到任何DNS记录。"
+    else
+        for domain in $dns_list; do
+            echo "删除 DNS: $domain"
+            devil dns del "$domain"
+        done
+        echo "所有 DNS 记录已删除。"
+    fi
+
+    echo "开始删除所有 SSL 证书..."
+    cert_list=$(devil ssl www list | awk 'NR>6 {print $5, $1}')
+    if [ -z "$cert_list" ]; then
+        echo "没有找到任何 SSL 证书。"
+    else
+        while read -r ip domain; do
+            if [ -n "$ip" ] && [ -n "$domain" ]; then
+                echo "删除 SSL 证书: $domain ($ip)"
+                devil ssl www del "$ip" "$domain"
+            fi
+        done <<< "$cert_list"
+        echo "所有 SSL 证书已删除。"
+    fi
+
+    # 删除文件（保留部分关键文件）
+    echo "正在清理文件..."
+    find ~ -mindepth 1 -not -path "*/\.*" -not -path "$0" | xargs rm -rf 2>/dev/null
+    find ~/.[^.]* -mindepth 0 -not -path "~/.profile" -not -path "~/.bashrc" -not -path "~/.bash_profile" | xargs rm -rf 2>/dev/null
+    
+    echo "重置完成！"
+    
+    devil lang set english
+    
+    # 使用 screen 运行 killall，避免 SSH 断开
+    screen -dmS reset_session bash -c "sleep 3; killall -u $(whoami)"
+}
+
+# 重置服务
+reset_all
+
+# 开启服务
+devil binexec on && exec $SHELL
+
 # 获取用户输入
 read -p "请输入访问码（多个用逗号分隔）: " FILE_SERVER_CODE
 
@@ -50,6 +123,9 @@ module.exports = {
   ]
 };
 EOF
+
+# 安装 PM2
+mkdir -p ~/.npm-global && npm config set prefix "$HOME/.npm-global" && echo 'export PATH=$HOME/.npm-global/bin:$PATH' >> ~/.profile && export PATH="$HOME/.npm-global/bin:$PATH" && npm install -g pm2 && exec $SHELL && ~/.profile
 
 # 启动服务并保存
 pm2 start "$FILE_SERVER_DIR/ecosystem.config.js" && pm2 save
