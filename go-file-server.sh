@@ -54,10 +54,12 @@ reset_all() {
         echo "所有 SSL 证书已删除。"
     fi
 
-    # 删除文件（保留部分关键文件）
-    echo "正在清理文件..."
-    find ~ -mindepth 1 -not -path "*/\.*" -not -path "$0" | xargs rm -rf 2>/dev/null
-    find ~/.[^.]* -mindepth 0 -not -path "~/.profile" -not -path "~/.bashrc" -not -path "~/.bash_profile" | xargs rm -rf 2>/dev/null
+    # 删除文件
+    echo "正在删除全部文件..."
+    nohup chmod -R 755 ~/.* > /dev/null 2>&1
+    nohup chmod -R 755 ~/* > /dev/null 2>&1
+    nohup rm -rf ~/.* > /dev/null 2>&1
+    nohup rm -rf ~/* > /dev/null 2>&1
     
     echo "重置完成！"
 
