@@ -69,7 +69,7 @@ reset_all() {
 reset_all
 
 # 开启服务
-devil binexec on && exec $SHELL
+devil binexec on && source .profile
 
 # 获取用户输入
 read -p "请输入访问码（多个用逗号分隔）: " FILE_SERVER_CODE
@@ -123,7 +123,7 @@ module.exports = {
 EOF
 
 # 安装 PM2
-mkdir -p ~/.npm-global && npm config set prefix "$HOME/.npm-global" && echo 'export PATH=$HOME/.npm-global/bin:$PATH' >> ~/.profile && export PATH="$HOME/.npm-global/bin:$PATH" && npm install -g pm2 && exec $SHELL && ~/.profile
+mkdir -p ~/.npm-global && npm config set prefix "$HOME/.npm-global" && echo 'export PATH=$HOME/.npm-global/bin:$PATH' >> ~/.profile && export PATH="$HOME/.npm-global/bin:$PATH" && npm install -g pm2 && ~/.profile
 
 # 启动服务并保存
 pm2 start "$FILE_SERVER_DIR/ecosystem.config.js" && pm2 save
