@@ -60,11 +60,9 @@ reset_all() {
     find ~/.[^.]* -mindepth 0 -not -path "~/.profile" -not -path "~/.bashrc" -not -path "~/.bash_profile" | xargs rm -rf 2>/dev/null
     
     echo "重置完成！"
-    
+
+    # 设置语言为英语（不支持中文）
     devil lang set english
-    
-    # 使用 screen 运行 killall，避免 SSH 断开
-    screen -dmS reset_session bash -c "sleep 3; killall -u $(whoami)"
 }
 
 # 重置服务
