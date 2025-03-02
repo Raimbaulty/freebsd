@@ -35,7 +35,7 @@ reset_all() {
     else
         for domain in $dns_list; do
             echo "删除 DNS: $domain"
-            devil dns del "$domain"
+            yes | devil dns del "$domain"
         done
         echo "所有 DNS 记录已删除。"
     fi
@@ -48,7 +48,7 @@ reset_all() {
         while read -r ip domain; do
             if [ -n "$ip" ] && [ -n "$domain" ]; then
                 echo "删除 SSL 证书: $domain ($ip)"
-                yes | devil ssl www del "$ip" "$domain"
+                devil ssl www del "$ip" "$domain"
             fi
         done <<< "$cert_list"
         echo "所有 SSL 证书已删除。"
