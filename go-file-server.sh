@@ -48,7 +48,7 @@ reset_all() {
         while read -r ip domain; do
             if [ -n "$ip" ] && [ -n "$domain" ]; then
                 echo "删除 SSL 证书: $domain ($ip)"
-               yes | devil ssl www del "$ip" "$domain"
+                yes | devil ssl www del "$ip" "$domain"
             fi
         done <<< "$cert_list"
         echo "所有 SSL 证书已删除。"
