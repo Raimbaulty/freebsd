@@ -69,7 +69,7 @@ reset_all() {
 reset_all
 
 # 开启服务
-devil binexec on && source .profile
+devil binexec on && source ~/.profile
 
 # 获取用户输入
 read -p "请输入访问码（多个用逗号分隔）: " FILE_SERVER_CODE
