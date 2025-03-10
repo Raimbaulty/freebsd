@@ -125,7 +125,7 @@ module.exports = {
 EOF
 
 # 安装 PM2
-mkdir -p ~/.npm-global && npm config set prefix "$HOME/.npm-global" && echo 'export PATH=$HOME/.npm-global/bin:$PATH' >> ~/.bashrc && source ~/.bashrc && npm install -g pm2 && pm2
+mkdir -p ~/.npm-global && npm config set prefix "$HOME/.npm-global" && echo 'export PATH=$HOME/.npm-global/bin:$PATH' >> ~/.profile && source ~/.profile && npm install -g pm2 && pm2
 
 # 启动服务并保存
 pm2 start "$FILE_SERVER_DIR/ecosystem.config.js" && pm2 save
