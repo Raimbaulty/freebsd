@@ -41,7 +41,7 @@ reset_all() {
     fi
 
     # echo "开始删除所有 SSL 证书..."
-    # cert_list=$(devil ssl www list | awk 'NR>6 {print $5, $1}')
+    # cert_list=$(devil ssl www list | awk 'NR>10 {print $6, $1}')
     # if [ -z "$cert_list" ]; then
     #     echo "没有找到任何 SSL 证书。"
     # else
