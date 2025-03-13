@@ -77,30 +77,29 @@ devil binexec on && source ~/.profile
 alias node=node20
 alias npm=npm20
 
+# 查询域名
+export BACKEND_SERVER_DOMAIN="$(whoami).serv00.net"
+
+# 拼接目录
+export BACKEND_SERVER_DIR="/home/$(whoami)/domains/$BACKEND_SERVER_DOMAIN/"
+
 # 输入前端域名
 read -p "请输入前端域名(逗号分隔): " FRONTEND_SERVER_DOMAIN
 
 # 查询端口
-initial_redis_ports=$(devil port list | awk '/^[0-9]/{print $1}' | sort)
-devil port add tcp random
-export REDIS_PORT=$(comm -13 <(echo "$initial_redis_ports") <(devil port list | awk '/^[0-9]/{print $1}' | sort) | head -n1)
+initial_redis_ports=$(devil port list | awk '/^[0-9]/{print $1}' | sort); devil port add tcp random; export REDIS_PORT=$(comm -13 <(echo "$initial_redis_ports") <(devil port list | awk '/^[0-9]/{print $1}' | sort) | head -n1)
 
 # 随机生成 Redis 密码
-REDIS_PASSWORD=$(openssl rand -hex 16)
+export REDIS_PASSWORD=$(openssl rand -hex 16)
 
 # 下载 Redis 配置文件
-fetch https://raw.githubusercontent.com/redis/redis/7.4/redis.conf
+fetch -o "$BACKEND_SERVER_DIR/redis.conf" https://raw.githubusercontent.com/redis/redis/7.4/redis.conf
 
 # 更新配置文件
-sed -i '' "s/^port .*/port $REDIS_PORT/" redis.conf
-sed -i '' "s/^requirepass .*/requirepass $REDIS_PASSWORD/" redis.conf
-sed -i '' "s/^appendonly yes$/appendonly no/" redis.conf
+sed -i '' "s/^port .*/port $REDIS_PORT/" redis.conf; sed -i '' "s/^requirepass .*/requirepass $REDIS_PASSWORD/" redis.conf; sed -i '' "s/^appendonly yes$/appendonly no/" redis.conf
 
 # 启动 Redis
-screen -dmS redis_session redis-server redis.conf
-
-# 测试 Redis
-redis-cli -h 127.0.0.1 -p $REDIS_PORT -a $REDIS_PASSWORD ping
+screen -dmS redis_session redis-server redis.conf; redis-cli -h 127.0.0.1 -p $REDIS_PORT -a $REDIS_PASSWORD ping
 
 # 创建 MongoDB 数据库
 DB_SUFFIX=$(openssl rand -hex 3)
@@ -124,12 +123,9 @@ EOD
 
 CLEANED_OUT="$(echo "$OUT" | sed -r 's/\x1B\[[0-9;]*[A-Za-z]//g')"
 
-DB_NAME="$(echo "$CLEANED_OUT" | awk -F': ' '/Database:/ {print $2}' | tr -d '[:space:]')"
-DB_HOST="$(echo "$CLEANED_OUT" | awk -F': ' '/Host:/ {print $2}' | tr -d '[:space:]')"
-DB_PASSWORD="$(echo "$CLEANED_OUT" | awk -F': ' '/Password:/ {print $2}' | tr -d '[:space:]')"
-
-# 查询域名
-export BACKEND_SERVER_DOMAIN="$(whoami).serv00.net"
+export DB_NAME="$(echo "$CLEANED_OUT" | awk -F': ' '/Database:/ {print $2}' | tr -d '[:space:]')"
+export DB_HOST="$(echo "$CLEANED_OUT" | awk -F': ' '/Host:/ {print $2}' | tr -d '[:space:]')"
+export DB_PASSWORD="$(echo "$CLEANED_OUT" | awk -F': ' '/Password:/ {print $2}' | tr -d '[:space:]')"
 
 # 查询DNS
 export BACKEND_SERVER_IP=$(dig +short a "web$(echo $HOSTNAME | grep -oE 's[0-9]+' | grep -oE '[0-9]+').serv00.com" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$' | head -n1)
@@ -144,9 +140,6 @@ devil www add "$BACKEND_SERVER_DOMAIN" proxy localhost "$BACKEND_SERVER_PORT"
 if ! devil ssl www add "$BACKEND_SERVER_IP" le le "$BACKEND_SERVER_DOMAIN"; then
     echo "SSL 证书申请失败，跳过 SSL 配置..."
 fi
-
-# 自动拼接后端服务器目录
-BACKEND_SERVER_DIR="/home/$(whoami)/domains/$BACKEND_SERVER_DOMAIN/"
 
 # 创建目录（如果不存在）
 mkdir -p "$BACKEND_SERVER_DIR"
