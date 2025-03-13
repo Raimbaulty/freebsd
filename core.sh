@@ -197,6 +197,7 @@ npm install sharp@0.32.5 --prefix ~/.mx-space
 mkdir -p ~/.npm-global && npm config set prefix "$HOME/.npm-global" && echo 'export PATH=$HOME/.npm-global/bin:$PATH' >> ~/.profile && source ~/.profile && npm install -g pm2 && pm2
 
 # 启动服务并保存
+cd $BACKEND_SERVER_DIR
 pm2 start "$BACKEND_SERVER_DIR/ecosystem.config.js" && pm2 save
 
 echo "后端服务器已成功部署在 https://$BACKEND_SERVER_DOMAIN"
