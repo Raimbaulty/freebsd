@@ -190,7 +190,8 @@ module.exports = {
 EOF
 
 # 安装 sharp
-npm install sharp@0.32.5 --prefix "$BACKEND_SERVER_DIR"
+mkdir ~/.mx-space
+npm install sharp@0.32.5 --prefix ~/.mx-space
 
 # 安装 PM2
 mkdir -p ~/.npm-global && npm config set prefix "$HOME/.npm-global" && echo 'export PATH=$HOME/.npm-global/bin:$PATH' >> ~/.profile && source ~/.profile && npm install -g pm2 && pm2
