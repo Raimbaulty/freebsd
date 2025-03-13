@@ -70,9 +70,6 @@ reset_all() {
 # 重置服务
 reset_all
 
-# 开启服务
-devil binexec on && source ~/.profile
-
 # 切换 NodeJS 版本
 alias node=node20
 alias npm=npm20
@@ -82,6 +79,9 @@ export BACKEND_SERVER_DOMAIN="$(whoami).serv00.net"
 
 # 拼接目录
 export BACKEND_SERVER_DIR="/home/$(whoami)/domains/$BACKEND_SERVER_DOMAIN/"
+
+# 创建目录（如果不存在）
+mkdir -p "$BACKEND_SERVER_DIR"
 
 # 输入前端域名
 read -p "请输入前端域名(逗号分隔): " FRONTEND_SERVER_DOMAIN
@@ -96,10 +96,10 @@ export REDIS_PASSWORD=$(openssl rand -hex 16)
 fetch -o "$BACKEND_SERVER_DIR/redis.conf" https://raw.githubusercontent.com/redis/redis/7.4/redis.conf
 
 # 更新配置文件
-sed -i '' "s/^port .*/port $REDIS_PORT/" redis.conf; sed -i '' "s/^requirepass .*/requirepass $REDIS_PASSWORD/" redis.conf; sed -i '' "s/^appendonly yes$/appendonly no/" redis.conf
+sed -i '' "s/^port .*/port $REDIS_PORT/" $BACKEND_SERVER_DIR/redis.conf; sed -i '' "s/^requirepass .*/requirepass $REDIS_PASSWORD/" $BACKEND_SERVER_DIR/redis.conf; sed -i '' "s/^appendonly yes$/appendonly no/" $BACKEND_SERVER_DIR/redis.conf
 
 # 启动 Redis
-screen -dmS redis_session redis-server redis.conf; redis-cli -h 127.0.0.1 -p $REDIS_PORT -a $REDIS_PASSWORD ping
+screen -dmS redis_session redis-server $BACKEND_SERVER_DIR/redis.conf; redis-cli -h 127.0.0.1 -p $REDIS_PORT -a $REDIS_PASSWORD ping
 
 # 创建 MongoDB 数据库
 DB_SUFFIX=$(openssl rand -hex 3)
@@ -140,9 +140,6 @@ devil www add "$BACKEND_SERVER_DOMAIN" proxy localhost "$BACKEND_SERVER_PORT"
 if ! devil ssl www add "$BACKEND_SERVER_IP" le le "$BACKEND_SERVER_DOMAIN"; then
     echo "SSL 证书申请失败，跳过 SSL 配置..."
 fi
-
-# 创建目录（如果不存在）
-mkdir -p "$BACKEND_SERVER_DIR"
 
 # 下载后端服务器代码
 curl -sL "https://github.com/mx-space/core/releases/latest/download/release-linux.zip" -o "$BACKEND_SERVER_DIR/core.zip"; unzip $BACKEND_SERVER_DIR/core.zip; rm $BACKEND_SERVER_DIR/core.zip
