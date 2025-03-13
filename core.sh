@@ -96,10 +96,10 @@ export REDIS_PASSWORD=$(openssl rand -hex 16)
 fetch -o "$BACKEND_SERVER_DIR/redis.conf" https://raw.githubusercontent.com/redis/redis/7.4/redis.conf
 
 # 更新配置文件
-sed -i '' "s/^port .*/port $REDIS_PORT/" $BACKEND_SERVER_DIR/redis.conf; sed -i '' -E "s/^# requirepass .*/requirepass $REDIS_PASSWORD/" $BACKEND_SERVER_DIR/redis.conf; sed -i '' 's/^appendonly yes$/appendonly no/' $BACKEND_SERVER_DIR/redis.conf
+sed -i '' "s/^port .*/port $REDIS_PORT/" $BACKEND_SERVER_DIR/redis.conf; sed -i '' -E "s/^# requirepass .*/requirepass $REDIS_PASSWORD/" $BACKEND_SERVER_DIR/redis.conf; sed -i '' 's/^appendonly no$/appendonly yes/' $BACKEND_SERVER_DIR/redis.conf
 
 # 启动 Redis
-screen -dmS redis_session redis-server $BACKEND_SERVER_DIR/redis.conf; redis-cli -h 127.0.0.1 -p $REDIS_PORT -a $REDIS_PASSWORD ping
+screen -dmS redis_session redis-server $BACKEND_SERVER_DIR/redis.conf
 
 # 创建 MongoDB 数据库
 OUT="$(
@@ -149,12 +149,12 @@ BACKEND_SERVER_JWT_SECRET=$(openssl rand -base64 24 | cut -c1-32)
 
 # 创建 PM2 配置文件
 cat > "$BACKEND_SERVER_DIR/ecosystem.config.js" <<EOF
-const { cpus } = require('os')
-const { execSync } = require('child_process')
-const nodePath = execSync(`npm root --quiet -g`, { encoding: 'utf-8' }).split(
-  '\n',
-)[0]
-const cpuLen = cpus().length
+const { cpus } = require('os');
+const { execSync } = require('child_process');
+
+const nodePath = execSync('npm root --quiet -g', { encoding: 'utf-8' }).trim();
+const cpuLen = cpus().length;
+
 module.exports = {
   apps: [
     {
@@ -165,7 +165,21 @@ module.exports = {
       watch: false,
       instances: cpuLen,
       max_memory_restart: '520M',
-      args: '--color --encrypt_enable --encrypt_key $BACKEND_SERVER_ENCRYPT_KEY --redis_host 127.0.0.1 --redis_port $REDIS_PORT --redis_password $REDIS_PASSWORD --db_host $DB_HOST --collection_name $DB_NAME --db_user $DB_USER --db_password $DB_PASSWORD --port $BACKEND_SERVER_PORT --allowed_origins $FRONTEND_SERVER_DOMAIN,localhost --jwt_secret $BACKEND_SERVER_JWT_SECRET',
+      args: [
+        '--color',
+        '--encrypt_enable',
+        '--encrypt_key', '$BACKEND_SERVER_ENCRYPT_KEY',
+        '--redis_host', '127.0.0.1',
+        '--redis_port', '$REDIS_PORT',
+        '--redis_password', '$REDIS_PASSWORD',
+        '--db_host', '$DB_HOST',
+        '--collection_name', '$DB_NAME',
+        '--db_user', '$DB_USER',
+        '--db_password', '$DB_PASSWORD',
+        '--port', '$BACKEND_SERVER_PORT',
+        '--allowed_origins', '$FRONTEND_SERVER_DOMAIN,localhost',
+        '--jwt_secret', '$BACKEND_SERVER_JWT_SECRET'
+      ].join(' '),
       env: {
         NODE_ENV: 'production',
         NODE_PATH: nodePath,
