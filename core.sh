@@ -96,9 +96,9 @@ export REDIS_PASSWORD=$(openssl rand -hex 16)
 fetch -o "$BACKEND_SERVER_DIR/redis.conf" https://raw.githubusercontent.com/redis/redis/7.4/redis.conf
 
 # 更新配置文件
-sed -i '' "s/^port .*/port $REDIS_PORT\
+sed -i '' 's/^port .*/port $REDIS_PORT\
 requirepass $REDIS_PASSWORD/' $BACKEND_SERVER_DIR/redis.conf
-sed -i '' "s/^appendonly yes$/appendonly no/" $BACKEND_SERVER_DIR/redis.conf
+sed -i '' 's/^appendonly yes$/appendonly no/' $BACKEND_SERVER_DIR/redis.conf
 
 # 启动 Redis
 screen -dmS redis_session redis-server $BACKEND_SERVER_DIR/redis.conf
