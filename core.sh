@@ -78,7 +78,7 @@ alias npm=npm20
 export BACKEND_SERVER_DOMAIN="$(whoami).serv00.net"
 
 # 拼接目录
-export BACKEND_SERVER_DIR="/home/$(whoami)/domains/$BACKEND_SERVER_DOMAIN/"
+export BACKEND_SERVER_DIR="/home/$(whoami)/domains/$BACKEND_SERVER_DOMAIN"
 
 # 创建目录（如果不存在）
 mkdir -p "$BACKEND_SERVER_DIR"
@@ -102,13 +102,11 @@ sed -i '' "s/^port .*/port $REDIS_PORT/" $BACKEND_SERVER_DIR/redis.conf; sed -i 
 screen -dmS redis_session redis-server $BACKEND_SERVER_DIR/redis.conf; redis-cli -h 127.0.0.1 -p $REDIS_PORT -a $REDIS_PASSWORD ping
 
 # 创建 MongoDB 数据库
-DB_SUFFIX=$(openssl rand -hex 3)
-
 OUT="$(
 expect <<'EOD'
   set timeout 10
   log_user 1
-  spawn devil mongo db add $DB_SUFFIX
+  spawn devil mongo db add core
   expect "Password:"
   send "\r"
   expect "Confirm password:"
