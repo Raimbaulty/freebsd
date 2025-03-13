@@ -86,7 +86,7 @@ devil port add tcp random
 export REDIS_PORT=$(comm -13 <(echo "$initial_redis_ports") <(devil port list | awk '/^[0-9]/{print $1}' | sort) | head -n1)
 
 # 随机生成 Redis 密码
-REDIS_PASSWORD=$(openssl rand -hex 3)
+REDIS_PASSWORD=$(openssl rand -hex 16)
 
 # 下载 Redis 配置文件
 fetch https://raw.githubusercontent.com/redis/redis/7.4/redis.conf
@@ -103,11 +103,13 @@ screen -dmS redis_session redis-server redis.conf
 redis-cli -h 127.0.0.1 -p $REDIS_PORT -a $REDIS_PASSWORD ping
 
 # 创建 MongoDB 数据库
+DB_SUFFIX=$(openssl rand -hex 3)
+
 OUT="$(
 expect <<'EOD'
   set timeout 10
   log_user 1
-  spawn devil mongo db add $(openssl rand -hex 3)
+  spawn devil mongo db add $DB_SUFFIX
   expect "Password:"
   send "\r"
   expect "Confirm password:"
@@ -150,7 +152,7 @@ BACKEND_SERVER_DIR="/home/$(whoami)/domains/$BACKEND_SERVER_DOMAIN/"
 mkdir -p "$BACKEND_SERVER_DIR"
 
 # 下载后端服务器代码
-curl -sL "https://github.com/mx-space/core/releases/latest/download/release-linux.zip" -o "$BACKEND_SERVER_DIR/core.zip"; unzip core.zip; rm core.zip
+curl -sL "https://github.com/mx-space/core/releases/latest/download/release-linux.zip" -o "$BACKEND_SERVER_DIR/core.zip"; unzip $BACKEND_SERVER_DIR/core.zip; rm $BACKEND_SERVER_DIR/core.zip
 
 # 生成安全加密信息
 BACKEND_SERVER_ENCRYPT_KEY=$(openssl rand -base64 48 | cut -c1-64)
