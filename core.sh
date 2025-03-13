@@ -159,7 +159,7 @@ module.exports = {
   apps: [
     {
       name: 'core',
-      script: 'index.js',
+      script: '$BACKEND_SERVER_DIR/index.js',
       autorestart: true,
       exec_mode: 'cluster',
       watch: false,
