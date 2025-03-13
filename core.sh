@@ -99,7 +99,7 @@ fetch -o "$BACKEND_SERVER_DIR/redis.conf" https://raw.githubusercontent.com/redi
 sed -i '' "s/^port .*/port $REDIS_PORT/" $BACKEND_SERVER_DIR/redis.conf; sed -i '' "s/^requirepass .*/requirepass $REDIS_PASSWORD/" $BACKEND_SERVER_DIR/redis.conf; sed -i '' "s/^appendonly yes$/appendonly no/" $BACKEND_SERVER_DIR/redis.conf
 
 # 启动 Redis
-screen -dmS redis_session redis-server $BACKEND_SERVER_DIR/redis.conf; redis-cli -h 127.0.0.1 -p $REDIS_PORT -a $REDIS_PASSWORD ping
+screen -dmS redis_session redis-server $BACKEND_SERVER_DIR/redis.conf
 
 # 创建 MongoDB 数据库
 OUT="$(
@@ -129,7 +129,7 @@ export DB_PASSWORD="$(echo "$CLEANED_OUT" | awk -F': ' '/Password:/ {print $2}' 
 export BACKEND_SERVER_IP=$(dig +short a "web$(echo $HOSTNAME | grep -oE 's[0-9]+' | grep -oE '[0-9]+').serv00.com" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$' | head -n1)
 
 # 查询端口
-initial_proxy_ports=$(devil port list | awk '/^[0-9]/{print $1}' | şort); devil port add tcp random; export BACKEND_SERVER_PORT=$(comm -13 <(echo "$initial_proxy_ports") <(devil port list | awk '/^[0-9]/{print $1}' | sort) | head -n1)
+initial_proxy_ports=$(devil port list | awk '/^[0-9]/{print $1}' | sort); devil port add tcp random; export BACKEND_SERVER_PORT=$(comm -13 <(echo "$initial_proxy_ports") <(devil port list | awk '/^[0-9]/{print $1}' | sort) | head -n1)
 
 # 配置反向代理
 devil www add "$BACKEND_SERVER_DOMAIN" proxy localhost "$BACKEND_SERVER_PORT"
