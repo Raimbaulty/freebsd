@@ -80,7 +80,7 @@ export BACKEND_SERVER_DOMAIN="$(whoami).serv00.net"
 # 拼接目录
 export BACKEND_SERVER_DIR="/home/$(whoami)/domains/$BACKEND_SERVER_DOMAIN"
 
-# 创建目录（如果不存在）
+# 创建目录
 mkdir -p "$BACKEND_SERVER_DIR"
 
 # 输入前端域名
@@ -123,6 +123,7 @@ CLEANED_OUT="$(echo "$OUT" | sed -r 's/\x1B\[[0-9;]*[A-Za-z]//g')"
 
 export DB_NAME="$(echo "$CLEANED_OUT" | awk -F': ' '/Database:/ {print $2}' | tr -d '[:space:]')"
 export DB_HOST="$(echo "$CLEANED_OUT" | awk -F': ' '/Host:/ {print $2}' | tr -d '[:space:]')"
+export DB_USER=$DB_HOST
 export DB_PASSWORD="$(echo "$CLEANED_OUT" | awk -F': ' '/Password:/ {print $2}' | tr -d '[:space:]')"
 
 # 查询DNS
@@ -140,7 +141,7 @@ if ! devil ssl www add "$BACKEND_SERVER_IP" le le "$BACKEND_SERVER_DOMAIN"; then
 fi
 
 # 下载后端服务器代码
-curl -sL "https://github.com/mx-space/core/releases/latest/download/release-linux.zip" -o "$BACKEND_SERVER_DIR/core.zip"; unzip $BACKEND_SERVER_DIR/core.zip; rm $BACKEND_SERVER_DIR/core.zip
+curl -sL "https://github.com/mx-space/core/releases/latest/download/release-linux.zip" -o "$BACKEND_SERVER_DIR/core.zip"; unzip "$BACKEND_SERVER_DIR/core.zip" -d "$BACKEND_SERVER_DIR"; rm $BACKEND_SERVER_DIR/core.zip
 
 # 生成安全加密信息
 BACKEND_SERVER_ENCRYPT_KEY=$(openssl rand -base64 48 | cut -c1-64)
