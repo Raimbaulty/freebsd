@@ -195,6 +195,6 @@ mkdir -p ~/.npm-global && npm config set prefix "$HOME/.npm-global" && echo 'exp
 
 # 启动服务并保存
 cd $BACKEND_SERVER_DIR
-pm2 start "$BACKEND_SERVER_DIR/ecosystem.config.js" && pm2 save
+pm2 start "/home/$(whoami)/domains/ecosystem.config.js" && pm2 save
 
 echo "后端服务器已成功部署在 https://$BACKEND_SERVER_DOMAIN"
