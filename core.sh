@@ -148,12 +148,9 @@ BACKEND_SERVER_ENCRYPT_KEY=$(openssl rand -base64 48 | cut -c1-64)
 BACKEND_SERVER_JWT_SECRET=$(openssl rand -base64 24 | cut -c1-32)
 
 # 创建 PM2 配置文件
-cat > "$BACKEND_SERVER_DIR/ecosystem.config.js" <<EOF
-const { cpus } = require('os');
+cat > "/home/$(whoami)/domains/ecosystem.config.js" <<EOF
 const { execSync } = require('child_process');
-
 const nodePath = execSync('npm root --quiet -g', { encoding: 'utf-8' }).trim();
-const cpuLen = cpus().length;
 
 module.exports = {
   apps: [
@@ -163,8 +160,8 @@ module.exports = {
       autorestart: true,
       exec_mode: 'cluster',
       watch: false,
-      instances: cpuLen,
-      max_memory_restart: '520M',
+      instances: 3,
+      max_memory_restart: '500M',
       args: [
         '--color',
         '--encrypt_enable',
