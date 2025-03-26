@@ -98,9 +98,6 @@ fetch -o "$BACKEND_SERVER_DIR/redis.conf" https://raw.githubusercontent.com/redi
 # 更新配置文件
 sed -i '' "s/^port .*/port $REDIS_PORT/" $BACKEND_SERVER_DIR/redis.conf; sed -i '' -E "s/^# requirepass .*/requirepass $REDIS_PASSWORD/" $BACKEND_SERVER_DIR/redis.conf; sed -i '' 's/^appendonly no$/appendonly yes/' $BACKEND_SERVER_DIR/redis.conf
 
-# 启动 Redis
-#screen -dmS redis_session redis-server $BACKEND_SERVER_DIR/redis.conf
-
 # 创建 MongoDB 数据库
 OUT="$(
 expect <<'EOD'
@@ -143,8 +140,7 @@ fi
 # 下载后端服务器代码
 curl -sL "https://github.com/mx-space/core/releases/latest/download/release-linux.zip" -o "$BACKEND_SERVER_DIR/core.zip"; unzip "$BACKEND_SERVER_DIR/core.zip" -d "$BACKEND_SERVER_DIR"; rm $BACKEND_SERVER_DIR/core.zip
 
-# 生成安全加密信息
-BACKEND_SERVER_ENCRYPT_KEY=$(openssl rand -base64 48 | cut -c1-64)
+# 生成JWT密钥
 BACKEND_SERVER_JWT_SECRET=$(openssl rand -base64 24 | cut -c1-32)
 
 # 创建 PM2 配置文件
@@ -170,9 +166,6 @@ module.exports = {
       instances: 3,
       max_memory_restart: '500M',
       args: [
-        '--color',
-        '--encrypt_enable',
-        '--encrypt_key', '$BACKEND_SERVER_ENCRYPT_KEY',
         '--redis_host', '127.0.0.1',
         '--redis_port', '$REDIS_PORT',
         '--redis_password', '$REDIS_PASSWORD',
@@ -181,7 +174,7 @@ module.exports = {
         '--db_user', '$DB_USER',
         '--db_password', '$DB_PASSWORD',
         '--port', '$BACKEND_SERVER_PORT',
-        '--allowed_origins', '$FRONTEND_SERVER_DOMAIN,localhost',
+        '--allowed_origins', '$FRONTEND_SERVER_DOMAIN',
         '--jwt_secret', '$BACKEND_SERVER_JWT_SECRET'
       ].join(' '),
       env: {
