@@ -148,7 +148,7 @@ BACKEND_SERVER_ENCRYPT_KEY=$(openssl rand -base64 48 | cut -c1-64)
 BACKEND_SERVER_JWT_SECRET=$(openssl rand -base64 24 | cut -c1-32)
 
 # 创建 PM2 配置文件
-cat > "/home/$(whoami)/domains/ecosystem.config.js" <<EOF
+cat > "$BACKEND_SERVER_DIR/ecosystem.config.js" <<EOF
 const { execSync } = require('child_process');
 const nodePath = execSync('npm root --quiet -g', { encoding: 'utf-8' }).trim();
 
@@ -195,6 +195,6 @@ mkdir -p ~/.npm-global && npm config set prefix "$HOME/.npm-global" && echo 'exp
 
 # 启动服务并保存
 cd $BACKEND_SERVER_DIR
-pm2 start "/home/$(whoami)/domains/ecosystem.config.js" && pm2 save
+pm2 start "$BACKEND_SERVER_DIR/ecosystem.config.js" && pm2 save
 
 echo "后端服务器已成功部署在 https://$BACKEND_SERVER_DOMAIN"
