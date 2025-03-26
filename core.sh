@@ -81,7 +81,7 @@ export BACKEND_SERVER_DOMAIN="$(whoami).serv00.net"
 export BACKEND_SERVER_DIR="/home/$(whoami)/domains/$BACKEND_SERVER_DOMAIN"
 
 # 创建目录
-mkdir -p "$BACKEND_SERVER_DIR"
+mkdir -p "$BACKEND_SERVER_DIR" && cd "$BACKEND_SERVER_DIR"
 
 # 输入前端域名
 read -p "请输入前端域名(逗号分隔): " FRONTEND_SERVER_DOMAIN
@@ -99,7 +99,7 @@ fetch -o "$BACKEND_SERVER_DIR/redis.conf" https://raw.githubusercontent.com/redi
 sed -i '' "s/^port .*/port $REDIS_PORT/" $BACKEND_SERVER_DIR/redis.conf; sed -i '' -E "s/^# requirepass .*/requirepass $REDIS_PASSWORD/" $BACKEND_SERVER_DIR/redis.conf; sed -i '' 's/^appendonly no$/appendonly yes/' $BACKEND_SERVER_DIR/redis.conf
 
 # 启动 Redis
-screen -dmS redis_session redis-server $BACKEND_SERVER_DIR/redis.conf
+#screen -dmS redis_session redis-server $BACKEND_SERVER_DIR/redis.conf
 
 # 创建 MongoDB 数据库
 OUT="$(
@@ -155,6 +155,13 @@ const nodePath = execSync('npm root --quiet -g', { encoding: 'utf-8' }).trim();
 module.exports = {
   apps: [
     {
+      name: 'redis',
+      script: 'redis-server',
+      args: '$BACKEND_SERVER_DIR/redis.conf',
+      autorestart: true,
+      watch: false,
+    },
+    {
       name: 'core',
       script: '$BACKEND_SERVER_DIR/index.js',
       autorestart: true,
@@ -194,7 +201,6 @@ npm install sharp@0.32.5 --prefix ~/.mx-space
 mkdir -p ~/.npm-global && npm config set prefix "$HOME/.npm-global" && echo 'export PATH=$HOME/.npm-global/bin:$PATH' >> ~/.profile && source ~/.profile && npm install -g pm2 && pm2
 
 # 启动服务并保存
-cd $BACKEND_SERVER_DIR
 pm2 start "$BACKEND_SERVER_DIR/ecosystem.config.js" && pm2 save
 
-echo "后端服务器已成功部署在 https://$BACKEND_SERVER_DOMAIN"
+echo "后台地址：https://$BACKEND_SERVER_DOMAIN/proxy/qaqdmin"
