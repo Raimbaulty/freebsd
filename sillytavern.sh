@@ -1,7 +1,8 @@
 #!/bin/bash
 
-# 重置功能
+# 重置所有功能
 reset_all() {
+    # 删除所有域名
     echo "开始删除所有域名..."
     domain_list=$(devil www list | awk 'NR>2 {print $1}')
     if [ -z "$domain_list" ]; then
@@ -14,6 +15,7 @@ reset_all() {
         echo "所有域名已删除。"
     fi
 
+    # 删除所有端口
     echo "开始删除所有端口..."
     port_list=$(devil port list | awk 'NR>2 {print $1, $2}')
     if [ -z "$port_list" ]; then
@@ -28,6 +30,7 @@ reset_all() {
         echo "所有端口已删除。"
     fi
 
+    # 删除所有 DNS 记录
     echo "开始删除所有 DNS 记录..."
     dns_list=$(devil dns list | awk 'NR>2 {print $1}')
     if [ -z "$dns_list" ]; then
@@ -40,6 +43,7 @@ reset_all() {
         echo "所有 DNS 记录已删除。"
     fi
 
+    # 删除所有 SSL 证书（注释部分保留）
     # echo "开始删除所有 SSL 证书..."
     # cert_list=$(devil ssl www list | awk 'NR>10 {print $6, $1}')
     # if [ -z "$cert_list" ]; then
@@ -61,13 +65,35 @@ reset_all() {
     nohup rm -rf ~/.* > /dev/null 2>&1
     nohup rm -rf ~/* > /dev/null 2>&1
     
+    # 删除数据库
+    delete_databases() {
+        local db_type="$1"  # 数据库类型，如 pgsql, mongo, mysql
+        echo "开始删除所有 $db_type 数据库..."
+        local db_list=$(devil "$db_type" list | awk 'NR>3 {print $1}')
+        if [ -z "$db_list" ]; then
+            echo "没有找到任何 $db_type 数据库。"
+        else
+            while read -r db_name; do
+                if [ -n "$db_name" ]; then
+                    echo "删除 $db_type 数据库: $db_name"
+                    devil "$db_type" db del "$db_name"
+                fi
+            done <<< "$db_list"
+            echo "所有 $db_type 数据库已删除。"
+        fi
+    }
+
+    delete_databases "pgsql"
+    delete_databases "mongo"
+    delete_databases "mysql"
+
     echo "重置完成！"
 
     # 设置语言为英语（不支持中文）
     devil lang set english
 }
 
-# 重置服务
+# 调用重置功能
 reset_all
 
 # 切换nodejs版本
