@@ -147,24 +147,24 @@ rm -rf "$PRIVATEBIN_DIR/public_html" && git clone https://github.com/PrivateBin/
 # 修改配置
 cp "$PRIVATEBIN_DIR/public_html/cfg/conf.sample.php" "$PRIVATEBIN_DIR/public_html/cfg/conf.php"
 
-sed -i '' -e 's/opendiscussion = false/opendiscussion = true/' \
-           -e 's/; discussiondatedisplay = false/discussiondatedisplay = true/' \
-           -e 's/fileupload = false/fileupload = true/' \
-           -e 's/burnafterreadingselected = false/burnafterreadingselected = true/' \
-           -e 's/\[model\]/;[model]/' \
-           -e 's/^;*\[model\]/;[model]/' \
-           -e 's/class = Filesystem/;class = Filesystem/' \
-           -e 's/\[model_options\]/;[model_options]/' \
-           -e 's/^;*\[model_options\]/;[model_options]/' \
-           -e 's/dir = PATH "data"/;dir = PATH "data"/' \
-           -e '$ a\
+sed -i '' -e "s/opendiscussion = false/opendiscussion = true/" \
+           -e "s/; discussiondatedisplay = false/discussiondatedisplay = true/" \
+           -e "s/fileupload = false/fileupload = true/" \
+           -e "s/burnafterreadingselected = false/burnafterreadingselected = true/" \
+           -e "s/\[model\]/;[model]/" \
+           -e "s/^;*\[model\]/;[model]/" \
+           -e "s/class = Filesystem/;class = Filesystem/" \
+           -e "s/\[model_options\]/;[model_options]/" \
+           -e "s/^;*\[model_options\]/;[model_options]/" \
+           -e "s/dir = PATH \"data\"/;dir = PATH \"data\"/" \
+           -e "\$ a\
 [model]\
 class = Database\
 [model_options]\
-dsn = "pgsql:host=\$DB_HOST;dbname=\$DB_NAME"\
-tbl = "privatebin_"     ; table prefix\
-usr = "\$DB_USER"\
-pwd = "\$DB_PASSWORD"\
-opt[12] = true    ; PDO::ATTR_PERSISTENT' "$PRIVATEBIN_DIR/public_html/cfg/conf.php"
+dsn = \"pgsql:host=$DB_HOST;dbname=$DB_NAME\"\
+tbl = \"privatebin_\"     ; table prefix\
+usr = \"$DB_USER\"\
+pwd = \"$DB_PASSWORD\"\
+opt[12] = true    ; PDO::ATTR_PERSISTENT" "$PRIVATEBIN_DIR/public_html/cfg/conf.php"
 
 echo "PrivateBin服务已部署在：https://$PRIVATEBIN_DOMAIN"
