@@ -124,10 +124,7 @@ Silly_Tavern_DIR="/home/$(whoami)/domains/$Silly_Tavern_DOMAIN/"
 mkdir -p "$Silly_Tavern_DIR" && cd "$Silly_Tavern_DIR"
 
 # 克隆仓库
-git clone https://github.com/SillyTavern/SillyTavern.git && cd SillyTavern
-
-# 构建
-npm install
+git clone https://github.com/SillyTavern/SillyTavern -b release && cd $_
 
 # 赋权
 chmod +x start.sh
