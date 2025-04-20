@@ -136,6 +136,7 @@ read -p "请输入用户名: " Silly_Tavern_USERNAME
 read -p "请输入密码: " Silly_Tavern_PASSWORD
 
 # 修改配置文件
+cp ./default/config.yaml ./config.yaml
 sed -i '' 's/listen: false/listen: true/; s/port: .*/port: '"$Silly_Tavern_PORT"'/; s/whitelistMode: true/whitelistMode: false/; s/basicAuthMode: false/basicAuthMode: true/; s/username: .*/username: '"$Silly_Tavern_USERNAME"'/; s/password: .*/password: '"$Silly_Tavern_PASSWORD"'/' config.yaml
 
 # 创建 PM2 配置文件
