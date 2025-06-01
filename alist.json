@@ -9,7 +9,7 @@
     "host": "alist_db",
     "port": 5432,
     "user": "alist",
-    "password": "password",
+    "password": "alist_password",
     "name": "alist",
     "db_file": "/opt/alist/data/data.db",
     "table_prefix": "x_",
