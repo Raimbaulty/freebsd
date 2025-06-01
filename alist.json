@@ -2,7 +2,7 @@
   "force": false,
   "address": "0.0.0.0",
   "port": 5244,
-  "site_url": "${DOMAIN}",
+  "site_url": "https://${DOMAIN}",
   "cdn": "https://fastly.jsdelivr.net/npm/alist-web@$version/dist/",
   "jwt_secret": "",
   "token_expires_in": 720,
@@ -13,7 +13,7 @@
     "user": "alist",
     "password": "${POSTGRES_PASSWORD}",
     "name": "alist",
-    "db_file": "data/data.db",
+    "db_file": "/opt/alist/data/data.db",
     "table_prefix": "x_",
     "ssl_mode": "disable"
   },
@@ -22,10 +22,10 @@
     "cert_file": "",
     "key_file": ""
   },
-  "temp_dir": "data/temp",
+  "temp_dir": "/opt/alist/data/temp",
   "log": {
     "enable": true,
-    "name": "log/log.log",
+    "name": "/opt/alist/data/log/log.log",
     "max_size": 10,
     "max_backups": 5,
     "max_age": 28,
