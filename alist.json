@@ -13,7 +13,7 @@
     "name": "alist",
     "db_file": "/opt/alist/data/data.db",
     "table_prefix": "x_",
-    "ssl_mode": "prefer",
+    "ssl_mode": "disable",
     "dsn": ""
   },
   "meilisearch": {
