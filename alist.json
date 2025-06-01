@@ -2,7 +2,7 @@
   "force": false,
   "site_url": "https://alist.com",
   "cdn": "",
-  "jwt_secret": "",
+  "jwt_secret": "N8kXf4LyQpV1DzR7",
   "token_expires_in": 48,
   "database": {
     "type": "postgres",
